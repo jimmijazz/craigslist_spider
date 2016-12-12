@@ -1,21 +1,4 @@
-# TODO:
-# Send email notification when finished
-# Write Setup.py file
-# UPLOAD TO HEROKU / PythonAnywhere / ScrapyHub
-# Proper getter and setters for class and subclasses for different Websites
-# Get images (they use javascript to display images so bit more work)
-# Description doesn't always seem to fetch properly
-# Change so can easily swap out cities
-# Incorporate other factors that might affect price like:
-                                        # Distance to metro station
-                                        # Crime in that area
-                                        # Wealth of that neighbourhood
-                                        # Restaurants, parks & amenities
-
-# Summary of data points for x amount of bedrooms within a geographic area
-# Transcribe to GeoJSON
-# Export market data into CSV (summary)
-# Why is it going to slow now(?)
+# Scrapes property rental listings from craigslist.org
 
 ##### ASSUMPTIONS #####
 
@@ -50,8 +33,8 @@ ALLOWED_DOMAINS = ['craigslist.org']
 
 # URLS TO CRAWL
 START_URLS = {
-            "boston"    :     'https://boston.craigslist.org/',
-            "new_york"  :     'https://newyork.craigslist.org/'
+            "boston"    :     'https://boston.craigslist.org',
+            "new_york"  :     'https://newyork.craigslist.org'
             }
 
 property_data = {}      # Dictionary of properties {ID:attributes}
@@ -86,7 +69,7 @@ class CraigListSpider(scrapy.Spider):
                 global current_url    # Get base URL
                 current_url = value   # Set starting URL
                 # Get all listing/results pages
-                index_urls = self.indexPages(current_url + "search/aap?s=100" )
+                index_urls = self.indexPages(current_url + "/search/aap?s=100" )
             except Exception as e:
                 print (e)
 
@@ -224,6 +207,12 @@ class CraigListSpider(scrapy.Spider):
         s.quit()
 
     def spider_closed(self, spider):
+        """ Actions to take when spider has finished. Writes property data to
+            text file.
+
+            spider_closed(object) -> None
+            """
+
         print("Scraped " + str(len(property_data)) + " property listings")
         try:
             with open("properties.txt", 'a') as f: # e.g Newyork.txt
